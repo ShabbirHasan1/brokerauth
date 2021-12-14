@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='brokerauth',
-    version='1',
+    version='1.1',
     author='Pratik Bhopal',
     author_email='pratikbhopal@gmail.com',
     description='Testing installation of Package',
@@ -16,6 +16,6 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/pratiksgith/brokerauth/issues"
     },
     license='MIT',
-    packages=['brokerauth'],
+    packages=setuptools.find_packages(),
     install_requires=['django-allauth'],
 )
