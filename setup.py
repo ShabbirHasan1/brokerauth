@@ -11,9 +11,9 @@ setuptools.setup(
     description='Testing installation of Package',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='https://github.com/vityasa/central/tree/develop/vityasa/brokerauth',
+    url='https://github.com/pratiksgith/brokerauth',
     project_urls = {
-        "Bug Tracker": "https://github.com/vityasa/central/issues"
+        "Bug Tracker": "https://github.com/pratiksgith/brokerauth/issues"
     },
     license='MIT',
     packages=['brokerauth'],
