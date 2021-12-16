@@ -1,6 +1,6 @@
 from allauth.socialaccount.providers.oauth2.urls import default_urlpatterns
 
-from .provider import AliceblueProvider
+from .provider import AliceBlueProvider
 
 
-urlpatterns = default_urlpatterns(AliceblueProvider)
+urlpatterns = default_urlpatterns(AliceBlueProvider)

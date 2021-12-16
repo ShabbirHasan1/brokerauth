@@ -7,11 +7,11 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2LoginView,
 )
 
-from .provider import AliceblueProvider
+from .provider import AliceBlueProvider
 
 
-class AliceblueOAuth2Adapter(OAuth2Adapter):
-    provider_id = AliceblueProvider.id
+class AliceBlueOAuth2Adapter(OAuth2Adapter):
+    provider_id = AliceBlueProvider.id
 
     access_token_url = 'https://ant.aliceblueonline.com/oauth2/token'
     authorize_url = 'https://ant.aliceblueonline.com/oauth2/auth'
@@ -39,5 +39,5 @@ class AliceblueOAuth2Adapter(OAuth2Adapter):
         return resp['data']
 
 
-oauth2_login = OAuth2LoginView.adapter_view(AliceblueOAuth2Adapter)
-oauth2_callback = OAuth2CallbackView.adapter_view(AliceblueOAuth2Adapter)
+oauth2_login = OAuth2LoginView.adapter_view(AliceBlueOAuth2Adapter)
+oauth2_callback = OAuth2CallbackView.adapter_view(AliceBlueOAuth2Adapter)

@@ -2,22 +2,22 @@ from allauth.socialaccount.providers.base import ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
 
 
-class AliceblueAccount(ProviderAccount):
+class AliceBlueAccount(ProviderAccount):
     def get_avatar_url(self):
         return self.account.extra_data.get('user').get('image_192', None)
 
     def to_str(self):
-        dflt = super(AliceblueAccount, self).to_str()
+        dflt = super(AliceBlueAccount, self).to_str()
         return '%s (%s)' % (
             self.account.extra_data.get('name', ''),
             dflt,
         )
 
 
-class AliceblueProvider(OAuth2Provider):
+class AliceBlueProvider(OAuth2Provider):
     id = 'aliceblue'
-    name = 'Aliceblue'
-    account_class = AliceblueAccount
+    name = 'AliceBlue'
+    account_class = AliceBlueAccount
 
     def extract_uid(self, data):
         return str(data['client_id'])
@@ -31,4 +31,4 @@ class AliceblueProvider(OAuth2Provider):
         return ['orders', 'holdings']
 
 
-provider_classes = [AliceblueProvider]
+provider_classes = [AliceBlueProvider]
