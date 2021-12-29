@@ -1,5 +1,7 @@
 import requests
 from allauth.account import app_settings
+from allauth.socialaccount.helpers import render_authentication_error, complete_social_login
+from allauth.socialaccount.providers.base import AuthError, ProviderException
 
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 from allauth.socialaccount.providers.oauth2.views import (
@@ -8,7 +10,10 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2LoginView,
 )
 from allauth.utils import build_absolute_uri
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse
+from py5paisa import FivePaisaClient
+from requests import RequestException
 
 from .client import FivePaisaOAuth2Client
 from .provider import FivePaisaProvider
@@ -25,23 +30,9 @@ class FivePaisaOAuth2Adapter(OAuth2Adapter):
     basic_auth = True
 
     def complete_login(self, request, app, token, **kwargs):
-        extra_data = self.get_data(token, app)
+        extra_data = kwargs['response']
         return self.get_provider().sociallogin_from_response(request,
                                                              extra_data)
-
-    def get_data(self, token, app):
-        # Verify the user first
-        headers = {'Authorization': f'{app.id}:{token}'}
-        resp = requests.get(
-            self.identity_url,
-            headers=headers
-        )
-        resp = resp.json()
-
-        if resp['status'] != 'success':
-            raise OAuth2Error()
-
-        return resp['data']
 
 
 class FivePaisaOAuth2ClientMixin(object):
@@ -70,30 +61,44 @@ class FivePaisaOAuth2LoginView(FivePaisaOAuth2ClientMixin, OAuth2LoginView):
 
 
 class FivePaisaOAuth2CallbackView(FivePaisaOAuth2ClientMixin, OAuth2CallbackView):
-    """
-        def dispatch(self, request, *args, **kwargs):
-            app = self.adapter.get_provider().get_app(self.request)
-            client = self.get_client(request, app)
-            try:
-                access_token = {'access_token': request.GET['auth_token'], 'refresh_token': request.GET['refresh_token']}
-                token = self.adapter.parse_token(access_token)
-                token.app = app
-                login = self.adapter.complete_login(request,
-                                                    app,
-                                                    token,
-                                                    response=access_token)
-                login.token = token
-                return complete_social_login(request, login)
-            except (PermissionDenied,
-                    OAuth2Error,
-                    RequestException,
-                    ProviderException) as e:
-                return render_authentication_error(
-                    request,
-                    self.adapter.provider_id,
-                    exception=e)
-    """
-    pass
+
+    def dispatch(self, request, *args, **kwargs):
+        """ custom dispatch as it doesn't follows typic OAuth2 flow """
+        if 'error' in request.GET or 'RequestToken' not in request.GET:
+            # Distinguish cancel from error
+            auth_error = request.GET.get('error', None)
+            if auth_error == self.adapter.login_cancelled_error:
+                error = AuthError.CANCELLED
+            else:
+                error = AuthError.UNKNOWN
+            return render_authentication_error(
+                request,
+                self.adapter.provider_id,
+                error=error)
+        app = self.adapter.get_provider().get_app(self.request)
+        client = self.get_client(request, app)
+        try:
+            # 5paisa doesn't have a seprate api for pull user profile
+            # and provides the profile details along with access token
+            # hence get_access_token function returns the entire body instead of just returning access token
+            login_data = client.get_access_token(request.GET['RequestToken'], key=app.key)
+            access_token = {'access_token':login_data['AccessToken']}
+            token = self.adapter.parse_token(access_token)
+            token.app = app
+            login = self.adapter.complete_login(request,
+                                                app,
+                                                token,
+                                                response=login_data)
+            login.token = token
+            return complete_social_login(request, login)
+        except (PermissionDenied,
+                OAuth2Error,
+                RequestException,
+                ProviderException) as e:
+            return render_authentication_error(
+                request,
+                self.adapter.provider_id,
+                exception=e)
 
 
 oauth2_login = FivePaisaOAuth2LoginView.adapter_view(FivePaisaOAuth2Adapter)

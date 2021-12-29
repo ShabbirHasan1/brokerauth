@@ -21,24 +21,30 @@ class FivePaisaOAuth2Client(OAuth2Client):
         params.update(extra_params)
         return '%s?%s' % (authorization_url, urlencode(params))
 
-    def get_access_token(self, code):
+    def get_access_token(self, code, key):
         data = {
-            'EncryKey': self.consumer_secret,
-            'RequestToken': code,
-            'UserId': '1h4UEVZ2qLi'
+            'head': {
+                'Key': self.consumer_key
+            },
+            'body': {
+                'EncryKey': self.consumer_secret,
+                'RequestToken': code,
+                'UserId': key
+            }
         }
-        headers = {'Key':self.consumer_key}
 
         self._strip_empty_keys(data)
         url = self.access_token_url
         resp = requests.request(self.access_token_method,
                                 url,
-                                data=data,
-                                headers=headers)
+                                json=data)
+
         access_token = None
         if resp.status_code == 200:
             access_token = resp.json()
-        if not access_token or 'access_token' not in access_token:
-            raise OAuth2Error('Error retrieving access token: %s'
-                              % resp.content)
+            if 'body' not in access_token or 'AccessToken' not in access_token['body'] or access_token['body']['AccessToken'] is None:
+                raise OAuth2Error('Error retrieving access token: %s'
+                                  % resp.content)
+            access_token = access_token['body']
+
         return access_token

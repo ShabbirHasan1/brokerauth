@@ -18,11 +18,11 @@ class FivePaisaProvider(OAuth2Provider):
     account_class = FivePaisaAccount
 
     def extract_uid(self, data):
-        return str(data['fy_id'])
+        return str(data['ClientCode'])
 
     def extract_common_fields(self, data):
         user = data.get('user', {})
-        return {'name': data.get('name'),
+        return {'name': data.get('ClientName'),
                 'email': data.get('email_id', None)}
 
     def get_default_scope(self):
