@@ -12,7 +12,6 @@ from allauth.socialaccount.providers.oauth2.views import (
 from allauth.utils import build_absolute_uri
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
-from py5paisa import FivePaisaClient
 from requests import RequestException
 
 from .client import FivePaisaOAuth2Client
