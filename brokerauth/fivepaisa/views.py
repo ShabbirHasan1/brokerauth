@@ -2,6 +2,7 @@ import requests
 from allauth.account import app_settings
 from allauth.socialaccount.helpers import render_authentication_error, complete_social_login
 from allauth.socialaccount.providers.base import AuthError, ProviderException
+from allauth.socialaccount.models import SocialLogin
 
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 from allauth.socialaccount.providers.oauth2.views import (
@@ -13,6 +14,7 @@ from allauth.utils import build_absolute_uri
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from requests import RequestException
+from allauth.utils import get_request_param
 
 from .client import FivePaisaOAuth2Client
 from .provider import FivePaisaProvider
@@ -89,6 +91,13 @@ class FivePaisaOAuth2CallbackView(FivePaisaOAuth2ClientMixin, OAuth2CallbackView
                                                 token,
                                                 response=login_data)
             login.token = token
+            if self.adapter.supports_state:
+                login.state = SocialLogin \
+                    .verify_and_unstash_state(
+                    request,
+                    get_request_param(request, 'state'))
+            else:
+                login.state = SocialLogin.unstash_state(request)
             return complete_social_login(request, login)
         except (PermissionDenied,
                 OAuth2Error,

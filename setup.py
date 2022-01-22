@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='brokerauth',
-    version='1.7',
+    version='1.8',
     author='Pratik Bhopal',
     author_email='pratikbhopal@gmail.com',
     description='Testing installation of Package',
