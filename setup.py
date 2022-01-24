@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='brokerauth',
-    version='1.8',
+    version='1.9',
     author='Pratik Bhopal',
     author_email='pratikbhopal@gmail.com',
     description='Testing installation of Package',
@@ -17,5 +17,5 @@ setuptools.setup(
     },
     license='MIT',
     packages=setuptools.find_packages(),
-    install_requires=['django-allauth'],
+    install_requires=['django-allauth',''],
 )
