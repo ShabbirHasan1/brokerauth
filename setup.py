@@ -17,5 +17,5 @@ setuptools.setup(
     },
     license='MIT',
     packages=setuptools.find_packages(),
-    install_requires=['django-allauth',''],
+    install_requires=['django-allauth','websocket-client','smartapi-python==1.2.9'],
 )
