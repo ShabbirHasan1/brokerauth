@@ -28,7 +28,7 @@ class AngelOneOAuth2Adapter(OAuth2Adapter):
     access_token_url = ''  # Not required as its not a OAUTH2
     authorize_url = 'https://smartapi.angelbroking.com/publisher-login'
     identity_url = ''  # Using the python client provided by vendor instead of rest call
-
+    supports_state = False
     basic_auth = True
 
     def complete_login(self, request, app, token, **kwargs):
