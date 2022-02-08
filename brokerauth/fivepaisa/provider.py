@@ -14,7 +14,7 @@ class FivePaisaAccount(ProviderAccount):
 
 class FivePaisaProvider(OAuth2Provider):
     id = 'fivepaisa'
-    name = '5Paisa'
+    name = '5paisa'
     account_class = FivePaisaAccount
 
     def extract_uid(self, data):
